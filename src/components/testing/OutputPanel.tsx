@@ -19,57 +19,53 @@ export function OutputPanel({ responses, isProcessing }: OutputPanelProps) {
   };
 
   const renderResponse = (response: TestingResponse, index: number) => {
-    // Determine display type based on response data
-    const isTestCase = response.invoke_type === 'test_case' || response.test_case;
-    const isUser = response.type === 'user';
+    const isAI = response.type === 'ai';
     const isError = response.type === 'error';
-
+    const hasTestCase = response.invoke_type === 'test_case' || response.test_case;
+    
     return (
       <div key={response.id || index} className="mb-4 md:mb-6">
         <Card>
           <CardHeader className="pb-2 md:pb-3 p-3 md:p-4 lg:p-6">
             <CardTitle className="flex items-center gap-1.5 md:gap-2 text-sm md:text-base">
-              {isTestCase ? (
+              {hasTestCase ? (
                 <>
                   <TestTube className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Test Cases Generated
-                </>
-              ) : isUser ? (
-                <>
-                  <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Your Input
                 </>
               ) : isError ? (
                 <>
                   <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Error
                 </>
+              ) : isAI ? (
+                <>
+                  <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  AI Response
+                </>
               ) : (
                 <>
                   <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Analysis
+                  User Message
                 </>
               )}
             </CardTitle>
           </CardHeader>
 
           <CardContent className="p-3 md:p-4 lg:p-6">
-            {isTestCase ? (
-              <div className="space-y-3 md:space-y-4">
-                <div className="p-3 md:p-4 bg-muted rounded-lg prose prose-xs sm:prose-sm max-w-none">
-                  <MarkdownRenderer content={response.content} />
-                </div>
-                <Button className="w-full text-sm md:text-base" size="default">
-                  <TestTube className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
-                  View Test Cases
-                </Button>
-              </div>
-            ) : (
-              <div className={`prose prose-xs sm:prose-sm md:prose-base max-w-none ${isError ? 'text-destructive' : ''}`}>
-                <MarkdownRenderer content={response.content} />
+            <div className="prose prose-xs sm:prose-sm md:prose-base max-w-none">
+              <MarkdownRenderer content={typeof response.content === 'string' ? response.content : JSON.stringify(response.content, null, 2)} />
+            </div>
+            {response.files && response.files.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="text-sm font-medium">Attachments:</p>
+                {response.files.map((file, idx) => (
+                  <a key={idx} href={file.url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline block">
+                    {file.name}
+                  </a>
+                ))}
               </div>
             )}
-
           </CardContent>
         </Card>
       </div>

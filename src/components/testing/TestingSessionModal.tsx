@@ -37,11 +37,14 @@ export function TestingSessionModal({ projectId, open, onClose, onSessionCreated
       const response = await api.post('/chat/', chatData);
       const newChat = response.data;
 
-      // Notify parent that session was created
-      onSessionCreated?.();
-
       // Close modal and redirect to testing studio with the new chat
       onClose();
+      
+      // Notify parent component if callback provided
+      if (onSessionCreated) {
+        onSessionCreated();
+      }
+      
       router.push(`/dashboard/projects/${projectId}/testing?chatId=${newChat.id}`);
 
     } catch (error) {

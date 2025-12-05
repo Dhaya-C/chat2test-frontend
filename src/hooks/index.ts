@@ -29,6 +29,11 @@ export { useTestingSubmit } from './useTestingSubmit';
 export { useProjectSessions } from './useProjectSessions';
 export { useSessionStats } from './useSessionStats';
 
+// Reports Hooks
+export { useReportFilters } from './useReportFilters';
+export { useReports } from './useReports';
+export { useSessionTestCases } from './useSessionTestCases';
+
 // Type exports
 export type { UseChatReturn } from './useChat';
 export type { UseRestApiReturn as UseApiReturn, WebSocketMessage as ApiMessage, ChatBotResponse, WebSocketMessageData } from '@/types/chat';
