@@ -6,16 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { MessageSquare, Download, TestTube } from 'lucide-react';
 import { exportConversation } from '@/lib/file-operations';
 import { MarkdownRenderer } from '@/components/shared';
-
-interface Response {
-  type: 'text' | 'test-cases' | 'question';
-  content: string;
-  testCases?: any[];
-  timestamp: string;
-}
+import { TestingResponse } from '@/hooks/useTestingResponses';
 
 interface OutputPanelProps {
-  responses: Response[];
+  responses: TestingResponse[];
   isProcessing: boolean;
 }
 
@@ -24,21 +18,31 @@ export function OutputPanel({ responses, isProcessing }: OutputPanelProps) {
     exportConversation(responses);
   };
 
-  const renderResponse = (response: Response, index: number) => {
+  const renderResponse = (response: TestingResponse, index: number) => {
+    // Determine display type based on response data
+    const isTestCase = response.invoke_type === 'test_case' || response.test_case;
+    const isUser = response.type === 'user';
+    const isError = response.type === 'error';
+
     return (
-      <div key={index} className="mb-4 md:mb-6">
+      <div key={response.id || index} className="mb-4 md:mb-6">
         <Card>
           <CardHeader className="pb-2 md:pb-3 p-3 md:p-4 lg:p-6">
             <CardTitle className="flex items-center gap-1.5 md:gap-2 text-sm md:text-base">
-              {response.type === 'test-cases' ? (
+              {isTestCase ? (
                 <>
                   <TestTube className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Test Cases Generated
                 </>
-              ) : response.type === 'question' ? (
+              ) : isUser ? (
                 <>
                   <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Question
+                  Your Input
+                </>
+              ) : isError ? (
+                <>
+                  <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  Error
                 </>
               ) : (
                 <>
@@ -50,12 +54,10 @@ export function OutputPanel({ responses, isProcessing }: OutputPanelProps) {
           </CardHeader>
 
           <CardContent className="p-3 md:p-4 lg:p-6">
-            {response.type === 'test-cases' ? (
+            {isTestCase ? (
               <div className="space-y-3 md:space-y-4">
                 <div className="p-3 md:p-4 bg-muted rounded-lg prose prose-xs sm:prose-sm max-w-none">
-                  <ReactMarkdown>
-                    {response.content}
-                  </ReactMarkdown>
+                  <MarkdownRenderer content={response.content} />
                 </div>
                 <Button className="w-full text-sm md:text-base" size="default">
                   <TestTube className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
@@ -63,7 +65,7 @@ export function OutputPanel({ responses, isProcessing }: OutputPanelProps) {
                 </Button>
               </div>
             ) : (
-              <div className="prose prose-xs sm:prose-sm md:prose-base max-w-none">
+              <div className={`prose prose-xs sm:prose-sm md:prose-base max-w-none ${isError ? 'text-destructive' : ''}`}>
                 <MarkdownRenderer content={response.content} />
               </div>
             )}

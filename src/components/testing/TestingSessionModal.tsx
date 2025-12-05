@@ -13,9 +13,10 @@ interface TestingSessionModalProps {
   projectId: number;
   open: boolean;
   onClose: () => void;
+  onSessionCreated?: () => void;
 }
 
-export function TestingSessionModal({ projectId, open, onClose }: TestingSessionModalProps) {
+export function TestingSessionModal({ projectId, open, onClose, onSessionCreated }: TestingSessionModalProps) {
   const router = useRouter();
   const { createProject } = useProject(); // We'll use this for validation
   const [sessionName, setSessionName] = useState('');
@@ -35,6 +36,9 @@ export function TestingSessionModal({ projectId, open, onClose }: TestingSession
 
       const response = await api.post('/chat/', chatData);
       const newChat = response.data;
+
+      // Notify parent that session was created
+      onSessionCreated?.();
 
       // Close modal and redirect to testing studio with the new chat
       onClose();
