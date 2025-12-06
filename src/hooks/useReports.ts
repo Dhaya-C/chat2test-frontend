@@ -5,11 +5,6 @@ import { api } from '@/lib/api';
 import { ReportFilter, ReportResponse, UseReportsReturn } from '@/types/reports';
 import { useToast } from './useToast';
 
-// Utility function to convert UI status to backend format (UI 'New' -> backend 'new')
-const statusToBackend = (status: string): string => {
-  return status.toLowerCase();
-};
-
 export function useReports(filters: ReportFilter): UseReportsReturn {
   const [reports, setReports] = useState<ReportResponse['reports']>([]);
   const [kpiSummary, setKpiSummary] = useState<ReportResponse['kpi_summary'] | null>(null);
@@ -27,7 +22,7 @@ export function useReports(filters: ReportFilter): UseReportsReturn {
         filters: {
           project_ids: filters.project_ids,
           session_ids: filters.session_ids,
-          test_case_status: filters.test_case_status?.map(statusToBackend) || null,
+          test_case_status: filters.test_case_status,
           priority: filters.priority,
           modules: filters.modules,
           date_from: filters.date_from,

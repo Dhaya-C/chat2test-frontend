@@ -37,7 +37,7 @@ const get30DaysAgoDate = () => {
 
 export default function ReportsPage() {
   // Hooks
-  const { filterOptions, filteredSessions, loading: filterLoading, error: filterError, updateSelectedProjects } = useReportFilters();
+  const { filterOptions, filteredSessions, loading: filterLoading, error: filterError } = useReportFilters();
   const toast = useToast();
 
   // State for filters
@@ -78,10 +78,41 @@ export default function ReportsPage() {
     
     console.log('Applying filters:', filtersToApply);
     
-    // Wait for state to update then refetch
-    // The useReports hook will handle the status transformation
-    setTimeout(() => refetchReports(), 50);
-  }, [refetchReports]);
+    // Manually fetch with the new filters (can't rely on refetchReports as it uses stale state)
+    try {
+      const response = await api.post('/reports/get-reports', { filters: filtersToApply });
+      console.log('Reports response:', response.data);
+      // Trigger a refetch after state update to sync everything
+      setTimeout(() => refetchReports(), 100);
+    } catch (err: any) {
+      console.error('Failed to apply filters:', err);
+      console.error('Error response:', err.response?.data);
+      
+      // Handle error message extraction
+      let errorMsg = 'Failed to apply filters';
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (typeof data === 'string') {
+          errorMsg = data;
+        } else if (data.detail) {
+          // Handle both string and array detail
+          if (typeof data.detail === 'string') {
+            errorMsg = data.detail;
+          } else if (Array.isArray(data.detail)) {
+            errorMsg = data.detail.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+          } else {
+            errorMsg = JSON.stringify(data.detail);
+          }
+        } else if (data.message) {
+          errorMsg = data.message;
+        }
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      
+      toast.error(errorMsg);
+    }
+  }, [refetchReports, toast]);
 
   // Handle Reset Filters button click
   const handleResetFilters = useCallback(() => {
@@ -192,14 +223,13 @@ export default function ReportsPage() {
           onResetFilters={handleResetFilters}
           loading={reportsLoading}
           filterLoading={filterLoading}
-          onProjectsChange={updateSelectedProjects}
         />
       )}
 
       {/* Export Button */}
-      {/* <div className="flex justify-end">
+      <div className="flex justify-end">
         <ReportExportButton filters={filters} disabled={reportsLoading} />
-      </div> */}
+      </div>
 
       {/* Report KPI Summary */}
       {reportsLoading ? (

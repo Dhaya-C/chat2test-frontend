@@ -15,7 +15,6 @@ interface ReportFilterPanelProps {
   onResetFilters: () => void;
   loading?: boolean;
   filterLoading?: boolean;
-  onProjectsChange?: (projectIds: number[] | null) => void;
 }
 
 export function ReportFilterPanel({
@@ -26,7 +25,6 @@ export function ReportFilterPanel({
   onResetFilters,
   loading = false,
   filterLoading = false,
-  onProjectsChange,
 }: ReportFilterPanelProps) {
   const [localFilters, setLocalFilters] = useState(currentFilters);
   const [isApplying, setIsApplying] = useState(false);
@@ -43,18 +41,13 @@ export function ReportFilterPanel({
         ? prev.project_ids.filter(id => id !== projectId)
         : [...(prev.project_ids || []), projectId];
 
-      const finalProjectIds = newProjectIds.length > 0 ? newProjectIds : null;
-      
-      // Notify parent about project selection change for session filtering
-      onProjectsChange?.(finalProjectIds);
-
       return {
         ...prev,
-        project_ids: finalProjectIds,
+        project_ids: newProjectIds.length > 0 ? newProjectIds : null,
         session_ids: null, // Reset sessions when projects change
       };
     });
-  }, [onProjectsChange]);
+  }, []);
 
   // Handle session selection
   const handleSessionToggle = useCallback((sessionId: string) => {
@@ -339,10 +332,45 @@ export function ReportFilterPanel({
             )}
           </div>
 
-          {/* Modules Dropdown - Commented Out */}
+          {/* Modules Dropdown */}
+          <div className="relative">
+            <label className="block text-xs font-semibold mb-2 text-foreground">Modules</label>
+            <button
+              onClick={() => setOpenDropdown(openDropdown === 'modules' ? null : 'modules')}
+              disabled={filterLoading}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm flex items-center justify-between hover:bg-accent disabled:opacity-50"
+            >
+              <span className="truncate">{getSelectedLabel('modules')}</span>
+              <ChevronDown className="h-4 w-4 flex-shrink-0" />
+            </button>
 
-          {/* Date Range - Commented Out */}
-          {/* <div>
+            {/* Modules Dropdown Menu */}
+            {openDropdown === 'modules' && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-input rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                {filterOptions?.modules?.length ? (
+                  filterOptions.modules.map(module => (
+                    <label
+                      key={module}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-accent cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={localFilters.modules?.includes(module) ?? false}
+                        onChange={() => handleModuleToggle(module)}
+                        className="rounded"
+                      />
+                      <span className="text-sm text-foreground truncate">{module}</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-xs text-muted-foreground">No modules available</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Date Range */}
+          <div>
             <label className="block text-xs font-semibold mb-2 text-foreground">From Date</label>
             <Input
               type="date"
@@ -362,7 +390,7 @@ export function ReportFilterPanel({
               disabled={loading}
               className="w-full"
             />
-          </div> */}
+          </div>
         </div>
 
         {/* Buttons */}
