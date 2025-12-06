@@ -81,7 +81,7 @@ export function ReportTable({
                 <th className="text-center p-3 font-semibold text-foreground">Total</th>
                 <th className="text-center p-3 font-semibold text-foreground text-green-600">✓</th>
                 <th className="text-center p-3 font-semibold text-foreground text-red-600">✗</th>
-                <th className="text-center p-3 font-semibold text-foreground text-yellow-600">New</th>
+                {/* <th className="text-center p-3 font-semibold text-foreground text-yellow-600">New</th> */}
                 <th className="text-center p-3 font-semibold text-foreground">Pass %</th>
                 <th className="text-left p-3 font-semibold text-foreground">Modules</th>
                 <th className="text-center p-3 font-semibold text-foreground">Actions</th>
@@ -113,9 +113,9 @@ export function ReportTable({
                   <td className="p-3 text-center text-red-600 font-semibold">
                     {report.test_case_metrics.test_cases_failed}
                   </td>
-                  <td className="p-3 text-center text-yellow-600 font-semibold">
+                  {/* <td className="p-3 text-center text-yellow-600 font-semibold">
                     {report.test_case_metrics.test_cases_new}
-                  </td>
+                  </td> */}
                   <td className="p-3 text-center">
                     <Badge
                       className={`${getStatusColor(report.test_case_metrics.pass_rate_percentage)}`}
