@@ -104,6 +104,7 @@ export interface UseReportFiltersReturn {
   filteredSessions: FilterOptions['sessions'];
   loading: boolean;
   error: string | null;
+  updateSelectedProjects: (projectIds: number[] | null) => void;
 }
 
 export interface UseReportsReturn {
