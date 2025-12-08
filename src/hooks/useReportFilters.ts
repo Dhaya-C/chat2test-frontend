@@ -4,6 +4,11 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { FilterOptions, UseReportFiltersReturn } from '@/types/reports';
 
+// Utility function to capitalize first letter (backend 'new' -> UI 'New')
+const capitalizeStatus = (status: string): string => {
+  return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+};
+
 export function useReportFilters(): UseReportFiltersReturn {
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +21,14 @@ export function useReportFilters(): UseReportFiltersReturn {
       setError(null);
       const response = await api.get('/reports/filter-options');
       console.log('Filter options response:', response.data);
-      setFilterOptions(response.data);
+      
+      // Transform statuses from backend (lowercase) to UI format (capitalized)
+      const transformedData = {
+        ...response.data,
+        statuses: response.data.statuses?.map((status: string) => capitalizeStatus(status)) || [],
+      };
+      
+      setFilterOptions(transformedData);
     } catch (err: any) {
       console.error('Failed to fetch filter options:', err);
       setError(err.message || 'Failed to fetch filter options');
@@ -49,5 +61,6 @@ export function useReportFilters(): UseReportFiltersReturn {
     filteredSessions,
     loading,
     error,
+    updateSelectedProjects,
   };
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { KPISummary } from '@/types/reports';
-import { BarChart3, CheckCircle2, XCircle, TrendingUp } from 'lucide-react';
+import { BarChart3, CheckCircle2, XCircle, TrendingUp, AlertCircle } from 'lucide-react';
 
 interface ReportKPISummaryProps {
   kpiSummary: KPISummary | null;
@@ -32,6 +32,13 @@ export function ReportKPISummary({ kpiSummary, loading = false }: ReportKPISumma
       iconColor: 'text-red-600',
     },
     {
+      title: 'New',
+      value: kpiSummary?.total_new ?? 0,
+      subtitle: 'Not executed',
+      icon: AlertCircle,
+      iconColor: 'text-amber-600',
+    },
+    {
       title: 'Pass Rate',
       value: `${(kpiSummary?.overall_pass_rate ?? 0).toFixed(1)}%`,
       subtitle: 'Success rate',
@@ -41,7 +48,7 @@ export function ReportKPISummary({ kpiSummary, loading = false }: ReportKPISumma
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {cards.map((card, index) => (
         <KPICard
           key={index}
