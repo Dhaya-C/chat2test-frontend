@@ -182,12 +182,13 @@ export function TestCasesTable({
                             <p className="mt-1">{testCase.actual_result}</p>
                           </div>
                         )}
-                        {testCase.error_log && (
+                        {/* Error log hidden - commented out for now */}
+                        {/* {testCase.error_log && (
                           <div className="bg-red-50 border border-red-200 rounded p-3">
                             <h4 className="font-medium text-red-700 mb-2">Error Log</h4>
                             <p className="text-sm text-red-600 font-mono">{testCase.error_log}</p>
                           </div>
-                        )}
+                        )} */}
                         <div className="col-span-1 md:col-span-2">
                           <strong className="text-muted-foreground">Comments:</strong>
                           <div className="mt-2 flex items-start gap-2">
