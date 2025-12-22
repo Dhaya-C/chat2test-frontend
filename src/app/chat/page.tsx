@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { TestCase } from '@/types/chat';
 import { useChat, useApi, useToast } from '@/hooks';
-import { ChatSidebar, ChatHeader, MessageList, ChatInput, ThinkingLoader, TestCaseModal } from '@/components/chat';
+import { ChatSidebar, ChatHeader, MessageList, ChatInput, ThinkingLoader, TestCaseModal, ExploreEventsDisplay } from '@/components/chat';
 import { FilePreview } from '@/components/chat/ChatInput';
 import { MessageAttachment } from '@/types/chat';
 import '../chat-scrollbar.css';
@@ -252,18 +252,31 @@ function ChatPageContent() {
         <ChatHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col min-h-0 w-full overflow-hidden">
-          {/* Messages */}
-          <MessageList messages={messages} chatEndRef={chatEndRef} isThinking={isThinking} />
+        <div className="flex-1 flex gap-0 min-h-0 w-full overflow-hidden">
+          {/* Messages Panel */}
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden border-r">
+            {/* Messages */}
+            <MessageList messages={messages} chatEndRef={chatEndRef} isThinking={isThinking} />
 
-          {/* Input */}
-          <ChatInput
-            value={input}
-            onChange={setInput}
-            onSubmit={handleSend}
-            onImageSelect={(e) => handleFileChange(e, 'image')}
-            onPdfSelect={(e) => handleFileChange(e, 'pdf')}
-          />
+            {/* Input */}
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSubmit={handleSend}
+              onImageSelect={(e) => handleFileChange(e, 'image')}
+              onPdfSelect={(e) => handleFileChange(e, 'pdf')}
+            />
+          </div>
+
+          {/* Exploration Events Panel - Show for test_case_discovery chats */}
+          {selectedChat && chats.find((c) => c.id === selectedChat)?.chat_type === 'test_case_discovery' && (
+            <div className="w-96 hidden lg:flex border-l bg-sidebar">
+              <ExploreEventsDisplay
+                projectId={projectId?.toString() || ''}
+                chatId={selectedChat.toString()}
+              />
+            </div>
+          )}
         </div>
       </div>
 

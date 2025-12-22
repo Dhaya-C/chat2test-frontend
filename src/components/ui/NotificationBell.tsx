@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNotifications } from '@/hooks/useNotifications';
 import { Notification } from '@/types/notification';
+import { NotificationPermissionBanner } from '@/components/shared/NotificationPermissionBanner';
 
 interface NotificationBellProps {
   className?: string;
@@ -107,6 +108,9 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
         
         {/* Scrollable Content */}
         <div className="max-h-96 overflow-y-auto p-4 custom-scrollbar">
+          {/* Notification Permission Banner */}
+          <NotificationPermissionBanner />
+          
           {loading && notifications.length === 0 ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : notifications.length === 0 ? (

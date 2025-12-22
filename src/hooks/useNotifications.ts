@@ -1,14 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '@/lib/api';
 import { Notification } from '@/types/notification';
+import { useBrowserNotifications } from './useBrowserNotifications';
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
+  const previousNotificationIds = useRef<Set<number>>(new Set());
+  
+  // Browser notification support
+  const { showNotification, canShowNotifications } = useBrowserNotifications();
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -17,6 +22,31 @@ export function useNotifications() {
       const response = await api.get('/notifications');
       // Sort by id in descending order (latest/highest id first)
       const sortedNotifications = [...response.data].sort((a, b) => b.id - a.id);
+      
+      // Detect new notifications and show browser notification
+      if (canShowNotifications && previousNotificationIds.current.size > 0) {
+        const newNotifications = sortedNotifications.filter(
+          notif => !previousNotificationIds.current.has(notif.id) && notif.status === 'unread'
+        );
+        
+        // Show browser notification for each new notification (max 3 to avoid spam)
+        newNotifications.slice(0, 3).forEach((notif) => {
+          showNotification({
+            title: 'New Notification',
+            body: notif.message,
+            tag: `notification-${notif.id}`,
+            data: {
+              chatId: notif.chat_id,
+              projectId: notif.project_id,
+              url: notif.chat_id ? `/chat?chatId=${notif.chat_id}` : `/dashboard/projects/${notif.project_id}`,
+            },
+          });
+        });
+      }
+      
+      // Update the previous notification IDs
+      previousNotificationIds.current = new Set(sortedNotifications.map(n => n.id));
+      
       setNotifications(sortedNotifications);
     } catch (err: any) {
       console.error('Failed to fetch notifications:', err);
@@ -25,7 +55,7 @@ export function useNotifications() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [canShowNotifications, showNotification]);
 
   const markAsRead = useCallback(async (notificationId: number) => {
     try {

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -16,6 +17,7 @@ interface UrlTestingModalProps {
 }
 
 export function UrlTestingModal({ projectId, open, onClose }: UrlTestingModalProps) {
+  const router = useRouter();
   const toast = useToast();
   const [sessionName, setSessionName] = useState('');
   const [url, setUrl] = useState('');
@@ -72,6 +74,9 @@ export function UrlTestingModal({ projectId, open, onClose }: UrlTestingModalPro
 
       // Close modal and reset form
       handleClose();
+
+      // Redirect to discovery page to see events
+      router.push(`/dashboard/projects/${projectId}/discovery/${newChat.id}`);
     } catch (error) {
       console.error('Failed to start URL exploration', error);
       setError("Failed to start exploration. Please check the console for details.");

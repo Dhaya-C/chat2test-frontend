@@ -48,6 +48,7 @@ export interface Chat {
   id: number;
   user_id?: number;
   title: string;
+  chat_type?: 'general_chat' | 'test_case_discovery';
   created_at?: string;
   updated_at?: string;
 }
