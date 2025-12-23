@@ -8,6 +8,8 @@ export { ThinkingLoader } from './ThinkingLoader';
 export { TestCaseModal } from './TestCaseModal';
 export { ChatItem } from './ChatItem';
 export { ChatActionsDropdown } from './ChatActionsDropdown';
+export { ExploreEventsDisplay } from './ExploreEventsDisplay';
+export { InputRequestModal } from './InputRequestModal';
 
 // Types
 export type { FilePreview } from './ChatInput';

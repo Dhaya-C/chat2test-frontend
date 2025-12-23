@@ -1,10 +1,11 @@
 "use client";
 
-import { MessageSquare, Calendar, Play, Trash2 } from 'lucide-react';
+import { MessageSquare, Calendar, Play, Trash2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { ChatSession } from '@/hooks/useProjectSessions';
+import { useRouter } from 'next/navigation';
 
 interface SessionCardProps {
   session: ChatSession;
@@ -19,6 +20,9 @@ export function SessionCard({
   onViewTestCases,
   onDelete
 }: SessionCardProps) {
+  const router = useRouter();
+  const isDiscoverySession = session.chat_type === 'test_case_discovery';
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -36,12 +40,24 @@ export function SessionCard({
     onDelete(session.id);
   };
 
+  const handleViewDiscovery = () => {
+    router.push(`/dashboard/projects/${session.project_id}/discovery/${session.id}`);
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg mb-2">{session.title}</CardTitle>
+            <div className="flex items-center gap-2 mb-2">
+              <CardTitle className="text-lg">{session.title}</CardTitle>
+              {isDiscoverySession && (
+                <Badge className="bg-purple-100 text-purple-700 border-purple-300">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Discovery
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
@@ -63,22 +79,45 @@ export function SessionCard({
 
       <CardContent>
         <div className="flex gap-2 flex-wrap">
-          <Button
-            size="sm"
-            onClick={() => onResume(session.id)}
-            className="bg-blue-500 text-white hover:bg-blue-600"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Resume Chat
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => onViewTestCases(session.id)}
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            View Test Cases
-          </Button>
+          {isDiscoverySession ? (
+            <>
+              <Button
+                size="sm"
+                onClick={handleViewDiscovery}
+                className="bg-purple-500 text-white hover:bg-purple-600"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                View Discovery
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onViewTestCases(session.id)}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                View Test Cases
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                size="sm"
+                onClick={() => onResume(session.id)}
+                className="bg-blue-500 text-white hover:bg-blue-600"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Resume Chat
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onViewTestCases(session.id)}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                View Test Cases
+              </Button>
+            </>
+          )}
           <Button
             size="sm"
             variant="outline"

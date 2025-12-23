@@ -7,6 +7,7 @@ export interface ChatSession {
   id: number;
   title: string;
   project_id: number;
+  chat_type?: 'general_chat' | 'test_case_discovery';
   created_at: string;
   updated_at?: string;
 }

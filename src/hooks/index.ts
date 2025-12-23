@@ -4,7 +4,10 @@ export { useChat } from './useChat';
 export { useRestApi as useApi } from './useRestApi'; // REST API hook with REST-like interface
 export { useToast } from './useToast';
 export { useNotifications } from './useNotifications';
+export { useBrowserNotifications } from './useBrowserNotifications';
 export { useDashboard } from './useDashboard';
+export { useExploreEvents } from './useExploreEvents';
+export { useDiscoverySession } from './useDiscoverySession';
 
 // Layout & UI Hooks
 export { useSidebarNav } from './useSidebarNav';
@@ -12,6 +15,7 @@ export { useUserInfo } from './useUserInfo';
 
 // Test Cases Hooks
 export { useTestCases } from './useTestCases';
+export { useTestCasesCount } from './useTestCasesCount';
 export { useTestCaseExecutor } from './useTestCaseExecutor';
 export { useJiraIntegration } from './useJiraIntegration';
 export { useTestCasePagination } from './useTestCasePagination';
