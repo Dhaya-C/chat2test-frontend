@@ -14,7 +14,7 @@ export function HeroSection() {
             color: 'transparent'
           }}
         >
-          Test Your Web Apps Automatically,
+          Test Your Web Apps Automatically
           <br />
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
