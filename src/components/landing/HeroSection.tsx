@@ -14,9 +14,8 @@ export function HeroSection() {
             color: 'transparent'
           }}
         >
-          Test Your Web Apps Automatically,
+          Test Your Web Apps Automatically
           <br />
-          In Your Own Language
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           TestSamurAI uses AI to understand your testing requirements in natural language
